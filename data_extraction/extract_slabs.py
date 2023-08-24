@@ -7,10 +7,11 @@ import re
 
 
 def create_csv(bank_name, url):
+
     # WEB SCRAPING
 
     # Web scraping prerequisites and configuration
-    web_service = Service('/usr/local/bin/chromedriver.exe')
+    web_service = Service()
     # url_hdfc = 'https://www.paisabazaar.com/fixed-deposit/hdfc-fd-rates/'
 
     options = webdriver.ChromeOptions()
@@ -32,13 +33,13 @@ def create_csv(bank_name, url):
     while not element_found:
         try:
             tenure = driver.find_element(By.XPATH,
-                                         "//div[contains(@class, 'wpb_text_column')][2]//tr[" + str(
+                                         "/html/body/div[2]/div[2]/div/div[2]/main/section/div/div/div/div/div/div[2]/div/table//tr[" + str(
                                              i + 3) + "]//td[1]").text
             general_rate = driver.find_element(By.XPATH,
-                                               "//div[contains(@class, 'wpb_text_column')][2]//tr[" + str(
+                                               "/html/body/div[2]/div[2]/div/div[2]/main/section/div/div/div/div/div/div[2]/div/table//tr[" + str(
                                                    i + 3) + "]//td[2]").text
             senior_rate = driver.find_element(By.XPATH,
-                                              "//div[contains(@class, 'wpb_text_column')][2]//tr[" + str(
+                                              "/html/body/div[2]/div[2]/div/div[2]/main/section/div/div/div/div/div/div[2]/div/table//tr[" + str(
                                                   i + 3) + "]//td[3]").text
 
             item = {
@@ -127,6 +128,8 @@ def create_csv(bank_name, url):
     result = pd.concat([df_1['Min Value'], df_1['Max Value']], axis=1)
     # print(result)
 
+    # bank.df = df_1
+
     # Storing dataframe as csv file
-    df_1.to_csv(f'{bank_name.lower()}_slabs.csv', index=False, mode='w')
+    df_1.to_csv(f'data_extraction/{bank_name.lower()}_slabs.csv', index=False, mode='w')
     print(f'{bank_name.lower()}_slabs.csv')

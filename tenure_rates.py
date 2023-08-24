@@ -1,18 +1,10 @@
-import dash
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import plotly.express as px
-from dash import Dash, html, dcc, Input, Output
-import socket
-from comp_interest_rate_plot import fig_1 as tenure_plot
-from comp_interest_rate_plot import fig as indiv_plot
-from historical_plot import fig as historic_plot
 
-web_service = Service('/usr/local/bin/chromedriver.exe')
+web_service = Service()
 url = 'https://www.paisabazaar.com/fixed-deposit/'
 
 options = webdriver.ChromeOptions()
@@ -119,5 +111,5 @@ df_2 = pd.DataFrame(private_bank_rates)
 # PLOT
 
 df_2['Highest Slab'] = df_2['Highest Slab'].astype(float)
-fig = px.bar(df_2, x='Bank Name', y='Highest Slab')
+fig = px.bar(df_2, x="Bank Name", y='Highest Slab')
 fig.update_layout(yaxis=dict(range=[7.0, 8.10], dtick=0.1))

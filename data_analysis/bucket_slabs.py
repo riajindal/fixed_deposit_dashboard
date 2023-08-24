@@ -28,7 +28,7 @@ from collections import defaultdict
 #     return days
 
 
-def bucket(bank_name, df, main):
+def bucket(bank_name, df):
     df_kotak = pd.read_csv(r'C:\Users\riaji\PycharmProjects\deposit_project\kotak_slabs.csv')
     # CUSTOM BUCKETING FUNCTION
 
@@ -109,21 +109,26 @@ def bucket(bank_name, df, main):
     df_kotak.drop(columns=df_kotak.columns.difference(['Tenure', 'General Rate']), inplace=True)
     df_kotak.loc[:, 'Bank Name'] = 'Kotak'
 
+    df = pd.DataFrame(list(res.items()), columns=['Tenure', 'General Rate'])
+    df.loc[:, 'Bank Name'] = bank_name
+
     # Creating a final data frame containing the
     # bucketed slabs, interest rates and original buckets
     # and adding them to a resultant storage structure
     # which can be plotted
-    # df structure = {['Tenure, 'General Rate', 'Bank Name']}
-    def add_bank_slabs(binned_slabs, bank_name, main):
-        df = pd.DataFrame(list(binned_slabs.items()), columns=['Tenure', 'General Rate'])
-        df.loc[:, 'Bank Name'] = bank_name
-        main = pd.concat([main, df], axis=0, ignore_index=True)
-        del df
-        return main
 
-    main = add_bank_slabs(res, bank_name, main)
-    return main
+    # df structure = {['Tenure, 'General Rate', 'Bank Name']}
+    # def add_bank_slabs(binned_slabs, bank_name, main):
+    #     df = pd.DataFrame(list(binned_slabs.items()), columns=['Tenure', 'General Rate'])
+    #     df.loc[:, 'Bank Name'] = bank_name
+    #     main = pd.concat([main, df], axis=0, ignore_index=True)
+    #     del df
+    #     return main
+    #
+    # main = add_bank_slabs(res, bank_name, main)
+
+    return df
     # print(result.tail())
 
 
-print(os.getcwd())
+# print(os.getcwd())
