@@ -1,6 +1,10 @@
 import pandas as pd
 from utility import master
 
+# data frame with rows from 1 - 3650
+# and columns being bank name
+# value corresponding to each row signifies interest rate
+# for that particular length of tenure
 df = pd.DataFrame(index=list(range(3651)))
 for bank in master:
     df[bank.name] = None

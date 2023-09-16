@@ -28,6 +28,8 @@ def get_revenue(bank, code):
     url = 'https://finance.yahoo.com/quote/'+code+'/financials?p='+code
     driver.get(url)
 
+    # From financials section of Yahoo Finance extract the revenue generated
+    # in terms of total income and interest income
     ttm = driver.find_element(By.XPATH, '//div[contains(@id, "Col1-1-Financials-Proxy")]/section/div[3]/div[1]/div/div[2]/div[1]/div[1]/div[2]/span').text
     button = driver.find_element(By.XPATH, '//div[contains(@id, "Col1-1-Financials-Proxy")]/section/div[3]/div[1]/div/div[2]/div[1]/div[1]/div[1]/div[1]/button')
     button.click()
@@ -40,6 +42,9 @@ def get_revenue(bank, code):
 # if __name__ == '__main__':
     # get_revenue('https://finance.yahoo.com/quote/ICICIBANK.NS/financials?p=ICICIBANK.NS')
 
+# Since running this script multiple times is time-consuming
+# and slows down the processes a function is created
+# to store the retrieved data in a .csv file for faster access
 def faster_get_revenue(master):
     data = []
     for bank in master:
@@ -50,6 +55,7 @@ def faster_get_revenue(master):
         })
 
     df = pd.DataFrame(data)
+    print("Revenue extracted")
     df.to_csv('bank_revenue.csv', mode='w', index=False)
 
 

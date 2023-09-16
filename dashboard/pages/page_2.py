@@ -6,15 +6,19 @@ import plotly.express as px
 from dash import html, dcc, callback, Input, Output
 from data_analysis.compare_rates import df
 
-from data_extraction.repo_rate import get_repo_rate
-
 PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\deposit_project'))
 
 # Add the project root to the Python path
 sys.path.insert(0, PROJECT_ROOT)
 
+# Add the project root to the Python path
 dash.register_page(__name__, path='/page-2', name='Day Wise Analysis')
 
+# Get repo rate from .txt file
+with open('../repo_rate.txt', 'r') as file:
+    repo_rate = float(file.read())
+
+# Create HTML page layout
 layout = html.Div([
     html.H2('Interest Rate Comparison'),
     dcc.Input(id='day', value='7', type='number', min=7, max=3650, step=1, debounce=True, className="my-2"),
@@ -44,6 +48,7 @@ layout = html.Div([
 ])
 
 
+# Callback function to add functionality to page
 @callback(
     [Output(component_id='m', component_property='figure')],
     [Input(component_id='day', component_property='value'),
@@ -54,7 +59,7 @@ def update_graph(day, compare_dropdown):
     if 'all' in compare_dropdown:
         compare_dropdown = new_df['Bank']
     figure_4 = px.bar(new_df[new_df['Bank'].isin(compare_dropdown)], x='Bank', y='Rate')
-    figure_4.add_hline(y=6.5, annotation_text=f'RBI Repo Rate 6.5', annotation_position='top left')
+    figure_4.add_hline(y=6.5, annotation_text=f'RBI Repo Rate {repo_rate}', annotation_position='top left')
     figure_4.update_layout(yaxis=dict(range=[2.0, 8.10], dtick=2.0))
 
     return [figure_4]

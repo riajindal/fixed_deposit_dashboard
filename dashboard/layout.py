@@ -12,7 +12,7 @@ documentation: https://dash.plot.ly/urls
 """
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, dcc, html
+from dash import dcc, html
 import socket
 
 app = dash.Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])

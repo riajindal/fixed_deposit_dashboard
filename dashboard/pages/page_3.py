@@ -5,8 +5,6 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 from dash import html, dcc, callback, Input, Output
-
-from data_extraction.repo_rate import get_repo_rate
 from utility import master
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\deposit_project'))
@@ -14,11 +12,14 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\
 # Add the project root to the Python path
 sys.path.insert(0, PROJECT_ROOT)
 
+# Register page as a page on the dashboard
 dash.register_page(__name__, path='/page-3', name='Day Wise Analysis')
 
+# Define options to be displayed in dropdown
 options = [{'label': bank.name, 'value': bank.name} for bank in master]
 options.append({'label': 'ALL', 'value': 'all'})
 
+# Create HTML page layout
 layout = html.Div(id='div', children=[
     html.H2("Bank: Interest Rate v/s Revenue"),
     dcc.Dropdown(
@@ -34,6 +35,7 @@ layout = html.Div(id='div', children=[
 ])
 
 
+# Callback function to add functionality to page
 @callback(
     [Output(component_id='revenue_graph', component_property='figure')],
     [Input(component_id='div', component_property='children'),

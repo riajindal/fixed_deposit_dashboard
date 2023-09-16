@@ -8,7 +8,7 @@ def get_repo_rate():
     # WEB SCRAPING
 
     # Web scraping prerequisites and configuration
-    web_service = Service('/usr/local/bin/chromedriver.exe')
+    web_service = Service()
 
     options = webdriver.ChromeOptions()
     options.add_argument(

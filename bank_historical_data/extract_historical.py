@@ -7,9 +7,13 @@ from datetime import datetime, timedelta, date
 PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\deposit_project'))
 
 # Add the project root to the Python path
+# for saving and running files in appropriate directories
 sys.path.insert(0, PROJECT_ROOT)
 print(os.getcwd())
 
+# Create data frame to store interest rates data for
+# the current date with rows from 1 to 3650 and
+# columns being each bank studied
 today = date.today()
 df = pd.DataFrame(index=list(range(3651)))
 for bank in master:
@@ -22,6 +26,9 @@ for bank in master:
             # print(df[bank_list[0].name].loc[i])
             df.loc[i, bank.name] = bank.df.at[index, 'General Rate']
 
+# Conditional logic to only save created data frame
+# if it is different from the last stored historical .csv
+# file in order to save memory usage
 directory = "bank_historical_data/"
 curr_files = [(file, os.path.getctime(os.path.join(directory, file))) for file in os.listdir("bank_historical_data")]
 curr_files = sorted(curr_files, key=lambda x: x[1], reverse=True)

@@ -2,11 +2,9 @@ import os
 import sys
 import dash
 import pandas as pd
-import numpy as np
 import plotly.express as px
 from dash import html, dcc, callback, Input, Output
 from datetime import date, datetime
-
 from utility import master
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\deposit_project'))
@@ -14,11 +12,14 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\
 # Add the project root to the Python path
 sys.path.insert(0, PROJECT_ROOT)
 
+# Register page as a page on the dashboard
 dash.register_page(__name__, path='/page-4', name='Historical Analysis')
 
+# Define options to be displayed in dropdown
 options = [{'label': bank.name, 'value': bank.name} for bank in master]
 options.append({'label': 'ALL', 'value': 'all'})
 
+# Create HTML page layout
 layout = html.Div(id='div', children=[
     html.H2("Historical Trend Analysis"),
     dcc.DatePickerRange(
@@ -42,6 +43,7 @@ layout = html.Div(id='div', children=[
 ])
 
 
+# Callback function to add functionality to page
 @callback(
     [Output(component_id='historical_graph', component_property='figure')],
     [Input(component_id='div', component_property='children'),
@@ -54,25 +56,32 @@ def update_graph(none, start_date, end_date, banks):
     historical_files = [file_name for file_name in files if file_name.startswith("historical")]
     df_data = []
 
+    # Get date from .csv file name
     def get_date(filename):
         d = filename.split("_", 1)[1]
         d = d.replace("_", "-").replace('.csv', '')
         return d
 
+    # Get the max rate for a date to plot in the
+    # form of an array of the max values for each bank
     def get_max_rates(filename):
         data = pd.read_csv(f'../bank_historical_data/{filename}')
         max_rates = data.iloc[:, :].max()
         return max_rates
 
+    # Convert date from string to datetime format
+    # for further manipulation and usage
     def format_date(value):
         res = datetime.strptime(value, "%Y-%m-%d")
         res = datetime.strftime(res, "%d-%m-%Y")
         res = pd.to_datetime(res, dayfirst=True)
         return res
 
+    # Get the closest .csv file matching the input date
     def get_closest_date(value):
         return min(df['Date'], key=lambda x: abs(x - value))
 
+    # Get dates as strings from historical files
     for file in historical_files:
         date = get_date(file)
         new_row = {
@@ -82,6 +91,11 @@ def update_graph(none, start_date, end_date, banks):
         new_row.update(get_max_rates(file))
         df_data.append(new_row)
 
+    # Create a new data frame to store
+    # dates and respective Max Values to plot
+    # Format:- {'Date', 'Filename', ... (each bank name)}
+    # Here df['HDFC'] for instance would store that
+    # dates max HDFC interest rate
     df = pd.DataFrame(df_data)
     df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y')
     df = df.sort_values(by='Date')
