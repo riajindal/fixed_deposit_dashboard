@@ -7,8 +7,9 @@ import plotly.express as px
 from dash import html, dcc, callback, Input, Output
 from plotly.subplots import make_subplots
 from utility import master
+from definition import ROOT_PATH
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\deposit_project'))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(ROOT_PATH))
 
 # Add the project root to the Python path
 sys.path.insert(0, PROJECT_ROOT)
@@ -21,7 +22,7 @@ options = [{'label': bank.name, 'value': bank.name} for bank in master]
 options.append({'label': 'ALL', 'value': 'all'})
 
 # Get repo rate from .txt file
-with open('../repo_rate.txt', 'r') as file:
+with open('repo_rate.txt', 'r') as file:
     repo_rate = file.read()
 
 # Create HTML page layout
@@ -49,7 +50,7 @@ layout = html.Div([
     [Input(component_id='my_dropdown', component_property='value')]
 )
 def update_graph(my_dropdown):
-    bucket_master = pd.read_csv(r'../bucket_master.csv')
+    bucket_master = pd.read_csv(r'bucket_master.csv')
     tenure_graph = px.line(bucket_master, x='Tenure', y='General Rate', color='Bank Name', markers=True)
     tenure_graph.add_hline(y=float(repo_rate), annotation_text=f'RBI Repo Rate {repo_rate}',
                            annotation_position='top left')

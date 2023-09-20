@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import re
 
-
 def create_csv(bank_name, url):
 
     # WEB SCRAPING

@@ -1,6 +1,11 @@
 import pandas as pd
-import os
 from collections import defaultdict
+import os
+import sys
+from definition import ROOT_PATH
+
+PROJECT_ROOT = os.path.dirname(os.path.abspath(ROOT_PATH))
+sys.path.insert(0, PROJECT_ROOT)
 
 # def convert_to_days(duration):
 #     days = 0
@@ -29,7 +34,7 @@ from collections import defaultdict
 
 
 def bucket(bank_name, df):
-    df_kotak = pd.read_csv(r'C:\Users\riaji\PycharmProjects\deposit_project\kotak_slabs.csv')
+    df_kotak = pd.read_csv(r'kotak_slabs.csv')
     # CUSTOM BUCKETING FUNCTION
 
     def bucket_slabs(df_1, df_2):

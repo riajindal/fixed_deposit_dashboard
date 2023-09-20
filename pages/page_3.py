@@ -6,9 +6,9 @@ import numpy as np
 import plotly.express as px
 from dash import html, dcc, callback, Input, Output
 from utility import master
+from definition import ROOT_PATH
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\deposit_project'))
-
+PROJECT_ROOT = os.path.dirname(os.path.abspath(ROOT_PATH))
 # Add the project root to the Python path
 sys.path.insert(0, PROJECT_ROOT)
 
@@ -43,7 +43,7 @@ layout = html.Div(id='div', children=[
 )
 def update_graph(none, banks):
 
-    df = pd.read_csv(r'../bank_revenue.csv')
+    df = pd.read_csv(r'bank_revenue.csv')
     df["TTM"] = df["TTM"].str.replace(",", "").astype(np.int64)
     df["Interest Income"] = df["Interest Income"].str.replace(",", "").astype(np.int64)
     df['Non Interest Income'] = df['TTM'] - df['Interest Income']

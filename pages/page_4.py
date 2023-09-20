@@ -4,11 +4,12 @@ import dash
 import pandas as pd
 import plotly.express as px
 from dash import html, dcc, callback, Input, Output
+import dash_bootstrap_components as dbc
 from datetime import date, datetime
 from utility import master
+from definition import ROOT_PATH
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(r'C:\Users\riaji\PycharmProjects\deposit_project'))
-
+PROJECT_ROOT = os.path.dirname(os.path.abspath(ROOT_PATH))
 # Add the project root to the Python path
 sys.path.insert(0, PROJECT_ROOT)
 
@@ -17,19 +18,31 @@ dash.register_page(__name__, path='/page-4', name='Historical Analysis')
 
 # Define options to be displayed in dropdown
 options = [{'label': bank.name, 'value': bank.name} for bank in master]
-options.append({'label': 'ALL', 'value': 'all'})
 
 # Create HTML page layout
 layout = html.Div(id='div', children=[
-    html.H2("Historical Trend Analysis"),
-    dcc.DatePickerRange(
-        id='selected_date',
-        min_date_allowed=date(2023, 7, 21),
-        max_date_allowed=date.today(),
-        initial_visible_month=date(2023, 7, 21),
-        start_date=date(2023, 7, 21),
-        end_date=date.today(),
-    ),
+    html.H2("Historical Trend Analysis", className='mb-3'),
+    dbc.Row([
+        dbc.Col([
+            dbc.Label("Enter start date and end date", className='d-block'),
+            dcc.DatePickerRange(
+                id='selected_date',
+                min_date_allowed=date(2023, 7, 21),
+                max_date_allowed=date.today(),
+                initial_visible_month=date(2023, 7, 21),
+                start_date=date(2023, 7, 21),
+                end_date=date.today(),
+                className='d-block'
+            ),
+        ]),
+        dbc.Col([
+            html.Div([
+                dbc.Label("Enter Tenure Length"),
+                dbc.Input(id='tenure_range', value='7', type='number', min=7, max=3650, step=1, debounce=True),
+            ]),
+        ]),
+    ], className='w-75 mb-2'),
+    dbc.Label("Select banks to compare"),
     dcc.Dropdown(
         id='banks',
         options=options,
@@ -49,10 +62,11 @@ layout = html.Div(id='div', children=[
     [Input(component_id='div', component_property='children'),
      Input(component_id='selected_date', component_property='start_date'),
      Input(component_id='selected_date', component_property='end_date'),
-     Input(component_id='banks', component_property='value')]
+     Input(component_id='banks', component_property='value'),
+     Input(component_id='tenure_range', component_property='value')]
 )
-def update_graph(none, start_date, end_date, banks):
-    files = os.listdir('../bank_historical_data')
+def update_graph(none, start_date, end_date, banks, tenure_range):
+    files = os.listdir('bank_historical_data')
     historical_files = [file_name for file_name in files if file_name.startswith("historical")]
     df_data = []
 
@@ -65,9 +79,14 @@ def update_graph(none, start_date, end_date, banks):
     # Get the max rate for a date to plot in the
     # form of an array of the max values for each bank
     def get_max_rates(filename):
-        data = pd.read_csv(f'../bank_historical_data/{filename}')
+        data = pd.read_csv(f'bank_historical_data/{filename}')
         max_rates = data.iloc[:, :].max()
         return max_rates
+
+    def get_tenure_values(filename, tenure_range):
+        data = pd.read_csv(f'bank_historical_data/{filename}')
+        row = data.loc[int(tenure_range)]
+        return row
 
     # Convert date from string to datetime format
     # for further manipulation and usage
@@ -88,7 +107,8 @@ def update_graph(none, start_date, end_date, banks):
             'Date': date,
             'Filename': file,
         }
-        new_row.update(get_max_rates(file))
+        # new_row.update(get_max_rates(file))
+        new_row.update(get_tenure_values(file, tenure_range))
         df_data.append(new_row)
 
     # Create a new data frame to store

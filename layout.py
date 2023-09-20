@@ -49,6 +49,7 @@ sidebar = html.Div(
                 dbc.NavLink("Tenure Comparison - Daily", href="/page-2", active="exact"),
                 dbc.NavLink("Revenue Comparison", href="/page-3", active="exact"),
                 dbc.NavLink("Historical Comparison", href="/page-4", active="exact"),
+                dbc.NavLink("Historical Comparison - Individual", href="/page-5", active="exact"),
             ],
             vertical=True,
             pills=True,
