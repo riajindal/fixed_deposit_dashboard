@@ -1,12 +1,16 @@
+from dateutil import parser
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import re
 
-def create_csv(bank_name, url):
 
+def create_csv(bank_name, url):
     # WEB SCRAPING
 
     # Web scraping prerequisites and configuration
@@ -28,6 +32,31 @@ def create_csv(bank_name, url):
     tenure_rates = []
     element_found = False
     i = 0
+
+    # Extracting the text containing last updated date for interest rates
+    try:
+        last_update = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "/html/body/div[2]/div[2]/div/div[2]/main/section[1]/div/div/div/div/div/div[2]/div/h3/strong"))
+        ).text
+    except TimeoutException:
+        last_update = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "/html/body/div[2]/div[2]/div/div[2]/main/section[1]/div/div/div/div/div/div[2]/div/h4/strong"))
+        ).text
+
+    pattern = r'w\.e\.f\.\s(\d+\s\w+\s\d{4})'
+
+    # Search for the date in the text
+    print(last_update)
+    match = re.search(pattern, last_update)
+
+    # Extract the matched date
+    if match:
+        last_update = match.group(1)
+        last_update = parser.parse(last_update)
+    else:
+        last_update = 0
 
     while not element_found:
         try:
@@ -128,6 +157,11 @@ def create_csv(bank_name, url):
     # print(result)
 
     # bank.df = df_1
+
+    # Adding last updated date column to the data frame
+    # and storing the date in the first row of the column
+    df_1['last_updated'] = None
+    df_1.at[0, 'last_updated'] = last_update
 
     # Storing dataframe as csv file
     df_1.to_csv(f'data_extraction/{bank_name.lower()}_slabs.csv', index=False, mode='w')

@@ -33,11 +33,11 @@ for bank in master:
 bucket_master.to_csv('bucket_master.csv', mode='w', index=False)
 
 # Extract bank historical data for future use
-# subprocess.run(['python', r'C:\Users\riaji\PycharmProjects\deposit_project\data_analysis\banks_historical_data.py'])
 subprocess.run(['python', r'bank_historical_data/extract_historical.py'])
 
 # Revenue Extraction from Yahoo Financials
-subprocess.run(['python', r'extract_revenue.py'])
+# Currently not required not dashboard hence commented out
+# subprocess.run(['python', r'extract_revenue.py'])
 
 # Extract RBI Repo Rate and store as .txt file for quick access
 repo_rate = str(get_repo_rate())

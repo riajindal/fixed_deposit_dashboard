@@ -16,7 +16,7 @@ urls_public = {
     'PNB': 'https://www.paisabazaar.com/fixed-deposit/pnb-fd-rates/',
     'BOB': 'https://www.paisabazaar.com/fixed-deposit/bank-of-baroda-fd-rates/',
     'CANARA': 'https://www.paisabazaar.com/fixed-deposit/canara-bank-fd-rates/',
-    'UNION': 'https://www.paisabazaar.com/union-bank-of-india/fixed-deposits/'
+    'UNION': 'https://www.paisabazaar.com/union-bank-of-india/fixed-deposits/',
 }
 
 for key, value in urls_private.items():

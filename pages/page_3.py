@@ -2,9 +2,10 @@ import os
 import sys
 import dash
 import pandas as pd
-import numpy as np
 import plotly.express as px
 from dash import html, dcc, callback, Input, Output
+import dash_bootstrap_components as dbc
+from datetime import date, datetime
 from utility import master
 from definition import ROOT_PATH
 
@@ -13,15 +14,35 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(ROOT_PATH))
 sys.path.insert(0, PROJECT_ROOT)
 
 # Register page as a page on the dashboard
-dash.register_page(__name__, path='/page-3', name='Day Wise Analysis')
+dash.register_page(__name__, path='/page-3', name='Historical Analysis')
 
 # Define options to be displayed in dropdown
 options = [{'label': bank.name, 'value': bank.name} for bank in master]
-options.append({'label': 'ALL', 'value': 'all'})
 
 # Create HTML page layout
 layout = html.Div(id='div', children=[
-    html.H2("Bank: Interest Rate v/s Revenue"),
+    html.H2("Historical Trend Analysis", className='mb-3'),
+    dbc.Row([
+        dbc.Col([
+            dbc.Label("Enter start date and end date", className='d-block'),
+            dcc.DatePickerRange(
+                id='selected_date',
+                min_date_allowed=date(2023, 7, 21),
+                max_date_allowed=date.today(),
+                initial_visible_month=date(2023, 7, 21),
+                start_date=date(2023, 7, 21),
+                end_date=date.today(),
+                className='d-block'
+            ),
+        ]),
+        dbc.Col([
+            html.Div([
+                dbc.Label("Enter Tenure Length"),
+                dbc.Input(id='tenure_range', value='7', type='number', min=7, max=3650, step=1, debounce=True),
+            ]),
+        ]),
+    ], className='w-75 mb-2'),
+    dbc.Label("Select banks to compare"),
     dcc.Dropdown(
         id='banks',
         options=options,
@@ -31,29 +52,82 @@ layout = html.Div(id='div', children=[
         clearable=True,
         style={'width': '50%'}
     ),
-    dcc.Graph(id='revenue_graph', figure={}, style={'height': '800px'}),
+    dcc.Graph(id='historical_graph', figure={}, style={'height': '800px'}),
 ])
 
 
 # Callback function to add functionality to page
 @callback(
-    [Output(component_id='revenue_graph', component_property='figure')],
+    [Output(component_id='historical_graph', component_property='figure')],
     [Input(component_id='div', component_property='children'),
-     Input(component_id='banks', component_property='value')]
+     Input(component_id='selected_date', component_property='start_date'),
+     Input(component_id='selected_date', component_property='end_date'),
+     Input(component_id='banks', component_property='value'),
+     Input(component_id='tenure_range', component_property='value')]
 )
-def update_graph(none, banks):
+def update_graph(none, start_date, end_date, banks, tenure_range):
+    files = os.listdir('bank_historical_data')
+    historical_files = [file_name for file_name in files if file_name.startswith("historical")]
+    df_data = []
 
-    df = pd.read_csv(r'bank_revenue.csv')
-    df["TTM"] = df["TTM"].str.replace(",", "").astype(np.int64)
-    df["Interest Income"] = df["Interest Income"].str.replace(",", "").astype(np.int64)
-    df['Non Interest Income'] = df['TTM'] - df['Interest Income']
-    df['Max Rate'] = None
-    for bank in master:
-        df.loc[df['Bank Name'] == bank.name, 'Max Rate'] = bank.rate
-    df.sort_values(by='TTM', inplace=True)
-    if 'all' not in banks:
-        df = df[df["Bank Name"].isin(banks)]
-    revenue_plot = px.bar(df, x='Bank Name', y=['Interest Income', 'Non Interest Income'],
-                          title='Interest Rate v/s Revenue', hover_data=['TTM', 'Max Rate'], text='Max Rate')
+    # Get date from .csv file name
+    def get_date(filename):
+        d = filename.split("_", 1)[1]
+        d = d.replace("_", "-").replace('.csv', '')
+        return d
 
-    return [revenue_plot]
+    # Get the max rate for a date to plot in the
+    # form of an array of the max values for each bank
+    def get_max_rates(filename):
+        data = pd.read_csv(f'bank_historical_data/{filename}')
+        max_rates = data.iloc[:, :].max()
+        return max_rates
+
+    def get_tenure_values(filename, tenure_range):
+        data = pd.read_csv(f'bank_historical_data/{filename}')
+        row = data.loc[int(tenure_range)]
+        return row
+
+    # Convert date from string to datetime format
+    # for further manipulation and usage
+    def format_date(value):
+        res = datetime.strptime(value, "%Y-%m-%d")
+        res = datetime.strftime(res, "%d-%m-%Y")
+        res = pd.to_datetime(res, dayfirst=True)
+        return res
+
+    # Get the closest .csv file matching the input date
+    def get_closest_date(value):
+        return min(df['Date'], key=lambda x: abs(x - value))
+
+    # Get dates as strings from historical files
+    for file in historical_files:
+        date = get_date(file)
+        new_row = {
+            'Date': date,
+            'Filename': file,
+        }
+        # new_row.update(get_max_rates(file))
+        new_row.update(get_tenure_values(file, tenure_range))
+        df_data.append(new_row)
+
+    # Create a new data frame to store
+    # dates and respective Max Values to plot
+    # Format:- {'Date', 'Filename', ... (each bank name)}
+    # Here df['HDFC'] for instance would store that
+    # dates max HDFC interest rate
+    df = pd.DataFrame(df_data)
+    df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y')
+    df = df.sort_values(by='Date')
+
+    start_date = format_date(start_date)
+    end_date = format_date(end_date)
+
+    start_date = get_closest_date(start_date)
+    end_date = get_closest_date(end_date)
+
+    df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+    fig = px.line(df, x="Date", y=banks)
+    fig.update_yaxes(title_text='Interest Rate (%)')
+
+    return [fig]

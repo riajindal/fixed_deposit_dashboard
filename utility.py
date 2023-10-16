@@ -6,7 +6,7 @@ from definition import ROOT_PATH
 PROJECT_ROOT = os.path.dirname(os.path.abspath(ROOT_PATH))
 
 bank_list_priv = [Bank(r'data_extraction/hdfc_slabs.csv', 'HDFC', 'HDFCBANK.NS'),
-                  Bank(r'kotak_slabs.csv', 'KOTAK', 'KOTAKBANK.NS'),
+                  Bank(r'data_extraction/kotak_slabs.csv', 'KOTAK', 'KOTAKBANK.NS'),
                   Bank(r'data_extraction/icici_slabs.csv', 'ICICI', 'ICICIBANK.NS'),
                   Bank(r'data_extraction/axis_slabs.csv', 'AXIS', 'AXISBANK.NS'),
                   Bank(r'data_extraction/idfc_slabs.csv', 'IDFC', 'IDFCFIRSTB.NS')]

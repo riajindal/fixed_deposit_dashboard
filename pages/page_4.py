@@ -3,6 +3,7 @@ import sys
 import dash
 import pandas as pd
 import plotly.express as px
+from plotly.subplots import make_subplots
 from dash import html, dcc, callback, Input, Output
 import dash_bootstrap_components as dbc
 from datetime import date, datetime
@@ -21,7 +22,7 @@ options = [{'label': bank.name, 'value': bank.name} for bank in master]
 
 # Create HTML page layout
 layout = html.Div(id='div', children=[
-    html.H2("Historical Trend Analysis", className='mb-3'),
+    html.H2("Historical Trend for Individual Banks", className='mb-3'),
     dbc.Row([
         dbc.Col([
             dbc.Label("Enter start date and end date", className='d-block'),
@@ -36,37 +37,32 @@ layout = html.Div(id='div', children=[
             ),
         ]),
         dbc.Col([
-            html.Div([
-                dbc.Label("Enter Tenure Length"),
-                dbc.Input(id='tenure_range', value='7', type='number', min=7, max=3650, step=1, debounce=True),
-            ]),
+            dbc.Label("Select Bank"),
+            dcc.Dropdown(
+                id='bank',
+                options=options,
+                optionHeight=35,
+                value='AXIS',
+                clearable=True,
+                style={'width': '50%'}
+            ),
         ]),
     ], className='w-75 mb-2'),
-    dbc.Label("Select banks to compare"),
-    dcc.Dropdown(
-        id='banks',
-        options=options,
-        optionHeight=35,
-        value=['KOTAK', 'AXIS'],
-        multi=True,
-        clearable=True,
-        style={'width': '50%'}
-    ),
-    dcc.Graph(id='historical_graph', figure={}, style={'height': '800px'}),
+    dcc.Graph(id='historical_graph_indiv', figure={}, style={'height': '800px'}),
 ])
 
 
 # Callback function to add functionality to page
 @callback(
-    [Output(component_id='historical_graph', component_property='figure')],
+    [Output(component_id='historical_graph_indiv', component_property='figure')],
     [Input(component_id='div', component_property='children'),
      Input(component_id='selected_date', component_property='start_date'),
      Input(component_id='selected_date', component_property='end_date'),
-     Input(component_id='banks', component_property='value'),
-     Input(component_id='tenure_range', component_property='value')]
+     Input(component_id='bank', component_property='value')]
 )
-def update_graph(none, start_date, end_date, banks, tenure_range):
-    files = os.listdir('bank_historical_data')
+def update_graph(none, start_date, end_date, bank):
+    # Retrieve files from directory
+    files = os.listdir(r'bank_historical_data')
     historical_files = [file_name for file_name in files if file_name.startswith("historical")]
     df_data = []
 
@@ -75,18 +71,6 @@ def update_graph(none, start_date, end_date, banks, tenure_range):
         d = filename.split("_", 1)[1]
         d = d.replace("_", "-").replace('.csv', '')
         return d
-
-    # Get the max rate for a date to plot in the
-    # form of an array of the max values for each bank
-    def get_max_rates(filename):
-        data = pd.read_csv(f'bank_historical_data/{filename}')
-        max_rates = data.iloc[:, :].max()
-        return max_rates
-
-    def get_tenure_values(filename, tenure_range):
-        data = pd.read_csv(f'bank_historical_data/{filename}')
-        row = data.loc[int(tenure_range)]
-        return row
 
     # Convert date from string to datetime format
     # for further manipulation and usage
@@ -97,36 +81,51 @@ def update_graph(none, start_date, end_date, banks, tenure_range):
         return res
 
     # Get the closest .csv file matching the input date
-    def get_closest_date(value):
+    def get_closest_date(value, df):
         return min(df['Date'], key=lambda x: abs(x - value))
 
-    # Get dates as strings from historical files
+    # Create list of json objects for filenames and their respective dates
     for file in historical_files:
-        date = get_date(file)
         new_row = {
-            'Date': date,
+            'Date': get_date(file),
             'Filename': file,
         }
-        # new_row.update(get_max_rates(file))
-        new_row.update(get_tenure_values(file, tenure_range))
         df_data.append(new_row)
 
-    # Create a new data frame to store
-    # dates and respective Max Values to plot
-    # Format:- {'Date', 'Filename', ... (each bank name)}
-    # Here df['HDFC'] for instance would store that
-    # dates max HDFC interest rate
+    # Create the data frame using list created above and sort according to dates
     df = pd.DataFrame(df_data)
     df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y')
-    df = df.sort_values(by='Date')
+    df = df.sort_values(by='Date', ignore_index=True)
 
+    # Format the inputted date by user into appropriate
+    # Datetime format for computation using custom function
+    # as defined above
     start_date = format_date(start_date)
     end_date = format_date(end_date)
 
-    start_date = get_closest_date(start_date)
-    end_date = get_closest_date(end_date)
+    # Get the nearest date according to files stored
+    # in directory for accessing values and creating graph
+    new_start_date = get_closest_date(start_date, df)
+    new_end_date = get_closest_date(end_date, df)
 
-    df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
-    fig = px.line(df, x="Date", y=banks)
+    # Retrieve the required .csv files
+    result_1 = df.loc[df['Date'] == new_start_date, 'Filename'].iloc[0]
+    df_1 = pd.read_csv(f'bank_historical_data/{result_1}')
+    result_2 = df.loc[df['Date'] == new_end_date, 'Filename'].iloc[0]
+    df_2 = pd.read_csv(f'bank_historical_data/{result_2}')
+
+    # Create consolidated data frame to plot comparison
+    compare_df = pd.DataFrame(index=list(range(3651)))
+    compare_df['Old'] = df_1[bank]
+    compare_df['New'] = df_2[bank]
+
+    # Create graph for comparison
+    fig = px.line(compare_df, x=compare_df.index, y=['Old', 'New'])
+    fig.update_xaxes(title_text='Number of Days')
+    fig.update_yaxes(title_text='Interest Rate (%)')
+
+    # fig = make_subplots(rows=1, cols=2, subplot_titles=['Start', 'End'])
+    # fig.add_trace(px.line(df_1, x=df_1.index, y=bank).data[0], row=1, col=1)
+    # fig.add_trace(px.line(df_2, x=df_2.index, y=bank).data[0], row=1, col=2)
 
     return [fig]

@@ -18,6 +18,9 @@ today = date.today()
 df = pd.DataFrame(index=list(range(3651)))
 for bank in master:
     df[bank.name] = 'None'
+    column_name = f"last_updated_{bank.name}"
+    df[column_name] = 'None'
+    df.at[0, column_name] = bank.df.at[0, 'last_updated']
     for index, row in bank.df.iterrows():
         min = row['Min Value']
         max = row['Max Value']

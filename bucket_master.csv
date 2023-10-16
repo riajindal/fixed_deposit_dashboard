@@ -28,9 +28,9 @@ Tenure,General Rate,Bank Name
 271 days - 363 days,6.0,HDFC
 365 days - 389 days,6.6,HDFC
 391 days - less than 23 months,7.03,HDFC
-2 years - less than 3 years,7.07,HDFC
+2 years - less than 3 years,7.05,HDFC
 3 years - less than 4 years,7.0,HDFC
-4 years - less than 5 years,7.12,HDFC
+4 years - less than 5 years,7.1,HDFC
 5 years - 10 years,7.0,HDFC
 7 - 14 days,2.75,KOTAK
 15 - 30 days,3.0,KOTAK
@@ -44,9 +44,9 @@ Tenure,General Rate,Bank Name
 271 days - 363 days,6.0,KOTAK
 364 days,6.5,KOTAK
 365 days - 389 days,7.1,KOTAK
-390 days ,7.2,KOTAK
+390 days ,7.15,KOTAK
 391 days - less than 23 months,7.2,KOTAK
-23 months,7.2,KOTAK
+23 months,7.25,KOTAK
 23 months 1 day - less than 2 years,7.2,KOTAK
 2 years - less than 3 years,7.0,KOTAK
 3 years - less than 4 years,6.5,KOTAK
@@ -78,14 +78,13 @@ Tenure,General Rate,Bank Name
 2 years - less than 3 years,7.1,AXIS
 3 years - less than 4 years,7.1,AXIS
 5 years - 10 years,7.0,AXIS
-7 - 14 days,3.5,IDFC
-15 - 30 days,3.5,IDFC
-31 - 45 days,4.0,IDFC
+7 - 14 days,3.0,IDFC
+15 - 30 days,3.0,IDFC
+31 - 45 days,3.0,IDFC
 46 - 90 days,4.5,IDFC
-91 - 120 days,5.0,IDFC
-181 days - 269 days,6.5,IDFC
-365 days - 389 days,7.5,IDFC
-391 days - less than 23 months,7.25,IDFC
+91 - 120 days,4.5,IDFC
+181 days - 269 days,5.75,IDFC
+365 days - 389 days,7.0,IDFC
 2 years - less than 3 years,7.25,IDFC
 3 years - less than 4 years,7.0,IDFC
 5 years - 10 years,7.0,IDFC
@@ -110,22 +109,22 @@ Tenure,General Rate,Bank Name
 3 years - less than 4 years,6.5,PNB
 5 years - 10 years,6.5,PNB
 7 - 14 days,3.0,BOB
-15 - 30 days,3.0,BOB
-46 - 90 days,4.5,BOB
-91 - 120 days,4.5,BOB
-181 days - 269 days,5.5,BOB
-391 days - less than 23 months,6.58,BOB
+15 - 30 days,3.5,BOB
+46 - 90 days,5.0,BOB
+91 - 120 days,5.0,BOB
+181 days - 269 days,5.75,BOB
+391 days - less than 23 months,6.72,BOB
 271 days - 363 days,6.75,BOB
 365 days - 389 days,6.75,BOB
-2 years - less than 3 years,7.05,BOB
+2 years - less than 3 years,7.25,BOB
 3 years - less than 4 years,6.5,BOB
 5 years - 10 years,6.5,BOB
 7 - 14 days,4.0,CANARA
 46 - 90 days,5.25,CANARA
 91 - 120 days,5.5,CANARA
-181 days - 269 days,6.25,CANARA
-271 days - 363 days,6.5,CANARA
-365 days - 389 days,6.9,CANARA
+181 days - 269 days,6.15,CANARA
+271 days - 363 days,6.25,CANARA
+365 days - 389 days,6.88,CANARA
 391 days - less than 23 months,7.25,CANARA
 2 years - less than 3 years,6.85,CANARA
 3 years - less than 4 years,6.8,CANARA

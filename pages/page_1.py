@@ -19,7 +19,6 @@ dash.register_page(__name__, path='/', name='Home')
 
 # Define options to be displayed in dropdown
 options = [{'label': bank.name, 'value': bank.name} for bank in master]
-options.append({'label': 'ALL', 'value': 'all'})
 
 # Get repo rate from .txt file
 with open('repo_rate.txt', 'r') as file:
@@ -61,41 +60,26 @@ def update_graph(my_dropdown):
         bank.bucket_fig.add_hline(y=float(repo_rate), annotation_text=f'RBI Repo Rate {repo_rate}',
                                   annotation_position='top left')
     figure_2 = ""
-    if len(my_dropdown) == 1 and 'all' not in my_dropdown:
+    if len(my_dropdown) == 1:
         for bank in master:
             if my_dropdown[0] == bank.name:
                 figure_2 = bank.bucket_fig
-    elif len(my_dropdown) > 1 and ('all' not in my_dropdown):
-        row_count = math.ceil(len(my_dropdown) / 2)
-        print(row_count)
-        column_count = 2
-        counter = 0
-        figure_2 = make_subplots(rows=row_count, cols=column_count, subplot_titles=my_dropdown)
-        for i in range(row_count):
-            for j in range(column_count):
-                if counter > len(my_dropdown) - 1:
-                    break
-                figure_2.add_trace(
-                    px.line(bucket_master[bucket_master['Bank Name'] == my_dropdown[counter]], x='Tenure',
-                            y='General Rate', markers=True, title=master[counter].name).data[0], row=i + 1, col=j + 1)
-                counter += 1
-
-    elif 'all' in my_dropdown:
-        print('here')
-        row_count = round(len(master) / 2)
-        print(row_count)
-        column_count = 2
-        counter = 0
-        figure_2 = make_subplots(rows=row_count, cols=column_count, subplot_titles=[bank.name for bank in master])
-        for i in range(row_count):
-            for j in range(column_count):
-                if counter > len(master) - 1:
-                    break
-                figure_2.add_trace(
-                    px.line(bucket_master[bucket_master['Bank Name'] == master[counter].name], x='Tenure',
-                            y='General Rate', markers=True, title=master[counter].name).data[0], row=i + 1, col=j + 1)
-                counter += 1
-        figure_2.update_xaxes(showticklabels=False)
+    elif len(my_dropdown) > 1:
+        filtered_df = bucket_master[bucket_master['Bank Name'].isin(my_dropdown)]
+        figure_2 = px.line(filtered_df, x='Tenure', y='General Rate', color='Bank Name')
+        # row_count = math.ceil(len(my_dropdown) / 2)
+        # print(row_count)
+        # column_count = 2
+        # counter = 0
+        # figure_2 = make_subplots(rows=row_count, cols=column_count, subplot_titles=my_dropdown)
+        # for i in range(row_count):
+        #     for j in range(column_count):
+        #         if counter > len(my_dropdown) - 1:
+        #             break
+        #         figure_2.add_trace(
+        #             px.line(bucket_master[bucket_master['Bank Name'] == my_dropdown[counter]], x='Tenure',
+        #                     y='General Rate', markers=True, title=master[counter].name).data[0], row=i + 1, col=j + 1)
+        #         counter += 1
 
     counter = 0
 
