@@ -49,64 +49,14 @@ layout = html.Div([
     [Input(component_id='my_dropdown', component_property='value')]
 )
 def update_graph(my_dropdown):
+    x_axis_order = master[1].df['Tenure']
     bucket_master = pd.read_csv(r'bucket_master.csv')
-    tenure_graph = px.line(bucket_master, x='Tenure', y='General Rate', color='Bank Name', markers=True)
-    tenure_graph.add_hline(y=float(repo_rate), annotation_text=f'RBI Repo Rate {repo_rate}',
-                           annotation_position='top left')
+    banks = [column for column in bucket_master.columns if column != "Tenure"]
+    figure_1 = px.line(bucket_master, x='Tenure', y=banks, markers=True)
+    figure_1.add_hline(y=float(repo_rate), annotation_text=f'RBI Repo Rate {repo_rate}', annotation_position='top left')
+    figure_1.update_xaxes(categoryorder='array', categoryarray=x_axis_order)
 
-    for bank in master:
-        bank.bucket_fig = px.line(bucket_master[bucket_master['Bank Name'] == bank.name], x='Tenure', y='General Rate',
-                                  markers=True, title=bank.name)
-        bank.bucket_fig.add_hline(y=float(repo_rate), annotation_text=f'RBI Repo Rate {repo_rate}',
-                                  annotation_position='top left')
-    figure_2 = ""
-    if len(my_dropdown) == 1:
-        for bank in master:
-            if my_dropdown[0] == bank.name:
-                figure_2 = bank.bucket_fig
-    elif len(my_dropdown) > 1:
-        filtered_df = bucket_master[bucket_master['Bank Name'].isin(my_dropdown)]
-        figure_2 = px.line(filtered_df, x='Tenure', y='General Rate', color='Bank Name')
-        # row_count = math.ceil(len(my_dropdown) / 2)
-        # print(row_count)
-        # column_count = 2
-        # counter = 0
-        # figure_2 = make_subplots(rows=row_count, cols=column_count, subplot_titles=my_dropdown)
-        # for i in range(row_count):
-        #     for j in range(column_count):
-        #         if counter > len(my_dropdown) - 1:
-        #             break
-        #         figure_2.add_trace(
-        #             px.line(bucket_master[bucket_master['Bank Name'] == my_dropdown[counter]], x='Tenure',
-        #                     y='General Rate', markers=True, title=master[counter].name).data[0], row=i + 1, col=j + 1)
-        #         counter += 1
+    figure_2 = px.line(bucket_master, x='Tenure', y=my_dropdown, markers=True)
+    figure_2.add_hline(y=float(repo_rate), annotation_text=f'RBI Repo Rate {repo_rate}', annotation_position='top left')
 
-    counter = 0
-
-    # indiv_plot.add_trace(
-    #     px.line(bucket_master[bucket_master['Bank Name'] == 'AXIS'], x='Tenure', y='General Rate', markers=True).data[
-    #         0], row=1, col=1)
-    # indiv_plot.add_trace(
-    #     px.line(bucket_master[bucket_master['Bank Name'] == 'ICICI'], x='Tenure', y='General Rate', markers=True).data[
-    #         0], row=1, col=2)
-    # indiv_plot.add_trace(
-    #     px.line(bucket_master[bucket_master['Bank Name'] == 'HDFC'], x='Tenure', y='General Rate', markers=True).data[
-    #         0], row=2, col=1)
-    # indiv_plot.add_trace(
-    #     px.line(bucket_master[bucket_master['Bank Name'] == 'IDFC'], x='Tenure', y='General Rate', markers=True).data[
-    #         0], row=2, col=2)
-    #
-    # indiv_plot.update_traces(line=dict(color='red'), row=1, col=1)
-    # indiv_plot.update_traces(line=dict(color='orange'), row=2, col=1)
-    # indiv_plot.update_traces(line=dict(color='green'), row=1, col=2)
-    # indiv_plot.update_traces(line=dict(color='purple'), row=2, col=2)
-    #
-    figure_2.add_hline(y=float(repo_rate), row='all', col='all', annotation_text=f'RBI Repo Rate {repo_rate}',
-                       annotation_position='top left')
-    #
-    # if my_dropdown != 'all':
-    #     for bank in master:
-    #         if my_dropdown == bank.name:
-    #             indiv_plot = bank.bucket_fig
-
-    return tenure_graph, figure_2
+    return figure_1, figure_2
