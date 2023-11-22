@@ -9,7 +9,7 @@ urls_private = {
     'AXIS': 'https://www.paisabazaar.com/fixed-deposit/axis-bank-fd-rates/',
     'ICICI': 'https://www.paisabazaar.com/fixed-deposit/icici-bank-fd-rates/',
     'IDFC': 'https://www.paisabazaar.com/idfc-bank/fixed-deposits/',
-        }
+}
 
 urls_public = {
     'SBI': 'https://www.paisabazaar.com/fixed-deposit/sbi-fd-rates/',
@@ -17,6 +17,7 @@ urls_public = {
     'BOB': 'https://www.paisabazaar.com/fixed-deposit/bank-of-baroda-fd-rates/',
     'CANARA': 'https://www.paisabazaar.com/fixed-deposit/canara-bank-fd-rates/',
     'UNION': 'https://www.paisabazaar.com/union-bank-of-india/fixed-deposits/',
+    'HSBC': 'https://www.paisabazaar.com/hsbc-bank/fixed-deposits/#:~:text=HSBC%20Bank%20offers%20FD%20interest,RFC%2C%20and%20FCNR%20fixed%20deposits.'
 }
 
 for key, value in urls_private.items():

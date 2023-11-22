@@ -5,20 +5,22 @@ from definition import ROOT_PATH
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(ROOT_PATH))
 
-bank_list_priv = [Bank(r'data_extraction/hdfc_slabs.csv', 'HDFC', 'HDFCBANK.NS'),
-                  Bank(r'data_extraction/kotak_slabs.csv', 'KOTAK', 'KOTAKBANK.NS'),
-                  Bank(r'data_extraction/icici_slabs.csv', 'ICICI', 'ICICIBANK.NS'),
-                  Bank(r'data_extraction/axis_slabs.csv', 'AXIS', 'AXISBANK.NS'),
-                  Bank(r'data_extraction/idfc_slabs.csv', 'IDFC', 'IDFCFIRSTB.NS')]
+bank_list_priv = [Bank(r'data_extraction/hdfc_slabs.csv', 'HDFC'),
+                  Bank(r'data_extraction/kotak_slabs.csv', 'KOTAK'),
+                  Bank(r'data_extraction/icici_slabs.csv', 'ICICI'),
+                  Bank(r'data_extraction/axis_slabs.csv', 'AXIS'),
+                  Bank(r'data_extraction/idfc_slabs.csv', 'IDFC')]
 
-bank_list_public = [Bank(r'data_extraction/sbi_slabs.csv', 'SBI', 'SBIN.NS'),
-                    Bank(r'data_extraction/pnb_slabs.csv', 'PNB', 'PNB.NS'),
-                    Bank(r'data_extraction/bob_slabs.csv', 'BOB', 'BANKBARODA.NS'),
-                    Bank(r'data_extraction/canara_slabs.csv', 'CANARA', 'CANBK.NS'),
-                    Bank(r'data_extraction/union_slabs.csv', 'UNION', 'UNIONBANK.NS')]
+bank_list_public = [Bank(r'data_extraction/sbi_slabs.csv', 'SBI'),
+                    Bank(r'data_extraction/pnb_slabs.csv', 'PNB'),
+                    Bank(r'data_extraction/bob_slabs.csv', 'BOB'),
+                    Bank(r'data_extraction/canara_slabs.csv', 'CANARA'),
+                    Bank(r'data_extraction/union_slabs.csv', 'UNION'),
+                    Bank(r'data_extraction/hsbc_slabs.csv', 'HSBC')]
 
 master = bank_list_priv + bank_list_public
 
+# Adjust index to fix error in Bank of Baroda script
 data = master[7].df
 data.loc[7, 'Min Value'] = 271
 data.loc[7, 'Max Value'] = 365
